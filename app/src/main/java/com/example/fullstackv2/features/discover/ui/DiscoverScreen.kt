@@ -24,16 +24,11 @@ fun DiscoverScreen(
     navigator: DestinationsNavigator
 ) {
     val state = vm.state.collectAsState()
-    val pop = vm.popularMovies.collectAsState()
-    val rate = vm.topRatedMovies.collectAsState()
-    val up = vm.upcomingMovies.collectAsState()
 
     val scope = rememberCoroutineScope()
     println("the state = $state")
     DiscoverScreenContent(
-        pop = StableHolder(pop.value),
-        rate = StableHolder(rate.value),
-        up = StableHolder(up.value),
+        state = state.value,
         loadMoreOne = {
             scope.launch {
                 vm.fetchOne()
@@ -57,9 +52,7 @@ fun DiscoverScreen(
 
 @Composable
 fun DiscoverScreenContent(
-    pop: StableHolder<List<MovieUi>>,
-    rate: StableHolder<List<MovieUi>>,
-    up: StableHolder<List<MovieUi>>,
+    state: DiscoverState,
     loadMoreOne: () -> Unit,
     loadMoreTwo: () -> Unit,
     loadMoreThree: () -> Unit,
@@ -75,10 +68,10 @@ fun DiscoverScreenContent(
             .recomposeHighlighter()
     ) {
         Column {
-            HorizontalList(type = Type.POPULAR, movies = ImmutableHolder(pop.item), loading = false, loadMore = loadMoreOne, onClick = onClick)
-            HorizontalList(type = Type.TOP_RATED, movies = ImmutableHolder(rate.item), loading = false, loadMore = loadMoreTwo, onClick = onClick)
-            HorizontalList(type = Type.UPCOMING, movies = ImmutableHolder(up.item), loading = false, loadMore = loadMoreThree, onClick = onClick)
-            HorizontalList(type = Type.TEST, movies = ImmutableHolder(pop.item), loading = false, loadMore = {}, onClick = {})
+            HorizontalList(type = Type.POPULAR, movies = state.popularMovies, loading = false, loadMore = loadMoreOne, onClick = onClick)
+            HorizontalList(type = Type.TOP_RATED, movies = state.topRatedMovies, loading = false, loadMore = loadMoreTwo, onClick = onClick)
+            HorizontalList(type = Type.UPCOMING, movies = state.upcomingMovies, loading = false, loadMore = loadMoreThree, onClick = onClick)
+            HorizontalList(type = Type.TEST, movies = state.popularMovies, loading = false, loadMore = {}, onClick = {})
         }
     }
 }

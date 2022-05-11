@@ -18,9 +18,9 @@ class DiscoverViewModel(
 
     private val loading = MutableStateFlow(false)
 
-    val popularMovies: MutableStateFlow<List<MovieUi>> = MutableStateFlow(emptyList())
-    val topRatedMovies: MutableStateFlow<List<MovieUi>> = MutableStateFlow(emptyList())
-    val upcomingMovies: MutableStateFlow<List<MovieUi>> = MutableStateFlow(emptyList())
+    private val popularMovies: MutableStateFlow<List<MovieUi>> = MutableStateFlow(emptyList())
+    private val topRatedMovies: MutableStateFlow<List<MovieUi>> = MutableStateFlow(emptyList())
+    private val upcomingMovies: MutableStateFlow<List<MovieUi>> = MutableStateFlow(emptyList())
 
     private val paginator = Paginator.DefaultPaginator(
         initialKey = 10,
@@ -85,8 +85,8 @@ class DiscoverViewModel(
         topRatedMovies,
         upcomingMovies
     ).map { (loading, pop, rated, up) ->
-        DiscoverState(loading, StableHolder(pop), StableHolder(rated), StableHolder(up))
-    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000L), DiscoverState(false, StableHolder(emptyList()), StableHolder(emptyList()), StableHolder(emptyList())))
+        DiscoverState(loading, pop, rated, up)
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000L), DiscoverState(false, emptyList(), emptyList(), emptyList()))
 
 
     init {

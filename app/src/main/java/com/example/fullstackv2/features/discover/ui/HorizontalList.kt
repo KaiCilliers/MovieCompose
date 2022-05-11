@@ -25,7 +25,7 @@ enum class Type {
 }
 
 @Composable
-fun HorizontalList(type:Type, movies: ImmutableHolder<List<MovieUi>>, loading: Boolean, loadMore: () -> Unit, onClick: (MovieUi) -> Unit) {
+fun HorizontalList(type:Type, movies: List<MovieUi>, loading: Boolean, loadMore: () -> Unit, onClick: (MovieUi) -> Unit) {
     SideEffect {
         println("recompile: ${type.name}")
     }
@@ -34,10 +34,10 @@ fun HorizontalList(type:Type, movies: ImmutableHolder<List<MovieUi>>, loading: B
             .recomposeHighlighter()
             .padding(bottom = MaterialTheme.spacing.large)
     ) {
-        itemsIndexed(movies.item) { i, item ->
+        itemsIndexed(movies) { i, item ->
 
-            if (i >= movies.item.size - 1 && !loading) {
-                println("PETER i = $i and size = ${movies.item.size} and loading: ${loading}")
+            if (i >= movies.size - 1 && !loading) {
+                println("PETER i = $i and size = ${movies.size} and loading: ${loading}")
                 loadMore()
             }
 
