@@ -17,30 +17,19 @@ class DiscoverViewModel(
 ) : ViewModel() {
 
     private val loading = MutableStateFlow(false)
+    private var count = 0
 
-    private val popularMovies: MutableStateFlow<List<MovieUi>> = MutableStateFlow(emptyList())
+    private val popularMovies: StateFlow<List<MovieUi>> = flow {
+        val s = movieRepo.popularMovies(++count).mapLatest { it.map { MovieUi(
+            id = it.id,
+            title = it.title,
+            posterUrl = it.posterUrl
+        ) } }
+        emitAll(s)
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000L), emptyList())
     private val topRatedMovies: MutableStateFlow<List<MovieUi>> = MutableStateFlow(emptyList())
     private val upcomingMovies: MutableStateFlow<List<MovieUi>> = MutableStateFlow(emptyList())
 
-    private val paginator = Paginator.DefaultPaginator(
-        initialKey = 10,
-        firstAmountOfPages = 1,
-        onLoadUpdated = {
-//            loading.value = it
-        },
-        onRequest = { nextPage ->
-            movieRepo.popularMovies(nextPage)
-        },
-        getNextKey = { currentKey ->
-            currentKey + 1
-        },
-        onError = {
-
-        },
-        onSuccuess = { items, newKey ->
-            popularMovies.value += items.asUiModel()
-        }
-    )
     private val paginator2 = Paginator.DefaultPaginator(
         initialKey = 10,
         firstAmountOfPages = 1,
@@ -91,7 +80,8 @@ class DiscoverViewModel(
 
     init {
         viewModelScope.launch {
-            val list = listOf(async { paginator.loadNextItems() },
+            movieRepo.deleteAll()
+            val list = listOf(
             async { paginator2.loadNextItems() },
             async { paginator3.loadNextItems() },)
             list.forEach {
@@ -101,7 +91,8 @@ class DiscoverViewModel(
     }
 
     suspend fun fetchOne() {
-        paginator.loadNextItems()
+        println("KAI COUNT - $count")
+        movieRepo.popularMovies(++count)
     }
     suspend fun fetchTwo() {
         paginator2.loadNextItems()

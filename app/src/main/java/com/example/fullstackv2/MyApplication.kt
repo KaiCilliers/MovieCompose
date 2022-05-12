@@ -2,6 +2,7 @@ package com.example.fullstackv2
 
 import android.app.Application
 import com.example.fullstackv2.features.discover.discoverModule
+import com.example.fullstackv2.local.localModule
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
 import org.koin.core.context.startKoin
@@ -15,7 +16,8 @@ class MyApplication : Application() {
             androidContext(this@MyApplication)
             modules(listOf(
                 networkModule,
-                discoverModule
+                localModule,
+                discoverModule,
             ))
         }
     }
